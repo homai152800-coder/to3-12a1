@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổ 3 - 12A1 | Kỷ Niệm Thanh Xuân</title>
+    <style>
+        :root {
+            --soft-blue: #4dabf7;
+            --bright-yellow: #ffd43b;
+            --text-dark: #2c3e50;
+            --frame-gold: #d4af37; /* Màu vàng đồng cho khung */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background: url('https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?q=80&w=2000&auto=format&fit=crop') no-repeat center center/cover fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px 15px;
+        }
+
+        /* --- PHẦN KHUNG CHÍNH (MAIN BOARD) --- */
+        .main-board {
+            background: rgba(255, 255, 255, 0.94);
+            width: 100%;
+            max-width: 1100px;
+            border-radius: 40px;
+            padding: 60px 30px;
+            text-align: center;
+            
+            /* Đóng khung ở đây */
+            border: 15px solid white; /* Khung trắng ngoài cùng */
+            outline: 2px solid var(--frame-gold); /* Viền chỉ vàng bên trong */
+            outline-offset: -10px;
+            
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15), inset 0 0 50px rgba(212, 175, 55, 0.05);
+            position: relative;
+        }
+
+        /* Thêm hoa văn ở 4 góc khung */
+        .main-board::before {
+            content: '🌸'; position: absolute; top: 20px; left: 20px; font-size: 1.5rem;
+        }
+        .main-board::after {
+            content: '🌸'; position: absolute; top: 20px; right: 20px; font-size: 1.5rem;
+        }
+
+        header h1 { 
+            color: var(--soft-blue); 
+            font-size: clamp(2rem, 6vw, 3.2rem); 
+            letter-spacing: 5px; 
+            text-transform: uppercase; 
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        header p { color: #888; font-style: italic; margin-bottom: 50px; }
+
+        .section-title {
+            font-size: 1.6rem; color: var(--text-dark); margin: 40px 0 30px;
+            position: relative; display: inline-block;
+        }
+        .section-title::after {
+            content: ''; position: absolute; bottom: -8px; left: 0; width: 100%; height: 4px; 
+            background: var(--bright-yellow); border-radius: 2px;
+        }
+
+        /* --- BỐ CỤC THÀNH VIÊN 2 - 4 - 5 --- */
+        .member-container { display: flex; flex-direction: column; gap: 35px; align-items: center; margin-bottom: 60px; }
+        .member-row { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; width: 100%; }
+        
+        .mem-card {
+            background: white; width: 165px; padding: 25px 10px; border-radius: 25px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05); transition: 0.3s; cursor: pointer;
+            border: 1px solid #eee;
+        }
+        .mem-card:hover { transform: translateY(-10px) rotate(2deg); box-shadow: 0 15px 30px rgba(77, 171, 247, 0.2); border-color: var(--soft-blue); }
+        .mem-card img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 3px solid var(--soft-blue); padding: 3px; background: white; }
+        .mem-card h4 { font-size: 1rem; color: #333; margin-bottom: 4px; }
+        .mem-card p { font-size: 0.75rem; color: var(--soft-blue); font-weight: bold; }
+
+        /* --- NGOẠI KHÓA 4 Ô --- */
+        .activity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; padding: 0 20px; }
+        .act-card {
+            background: white; border-radius: 25px; overflow: hidden;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05); transition: 0.3s; cursor: pointer;
+            border: 1px solid #f0f0f0;
+        }
+        .act-card:hover { transform: scale(1.05); border-color: var(--bright-yellow); }
+        .act-card img { width: 100%; height: 160px; object-fit: cover; }
+        .act-card h3 { padding: 18px; font-size: 1.1rem; color: #444; font-weight: 600; }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 999;
+        }
+        .modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 700px; max-height: 85vh; background: white; 
+            border-radius: 35px; overflow-y: auto; z-index: 1000; padding: 30px;
+        }
+
+        .image-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .image-gallery img { width: 100%; height: 160px; object-fit: cover; border-radius: 15px; }
+        .image-gallery img.large { grid-column: span 2; height: 320px; }
+
+        .close-btn { 
+            background: var(--text-dark); color: white; border: none; padding: 12px 40px; 
+            border-radius: 50px; cursor: pointer; display: block; margin: 20px auto 0; font-weight: bold;
+        }
+
+        footer { margin-top: 60px; opacity: 0.5; font-size: 0.85rem; padding-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
+<div class="modal" id="modal">
+    <div id="modal-content"></div>
+    <button class="close-btn" onclick="closeModal()">QUAY LẠI</button>
+</div>
+
+<div class="main-board">
+    <header>
+        <h1>🌟 TỔ 3 - 12A1 🌟</h1>
+        <p>Mãi mãi là một gia đình rực rỡ</p>
+    </header>
+
+    <h2 class="section-title">THÀNH VIÊN TRONG TỔ</h2>
+    <div class="member-container">
+        <div class="member-row" id="row-1"></div> <div class="member-row" id="row-2"></div> <div class="member-row" id="row-3"></div> </div>
+
+    <h2 class="section-title">NGOẠI KHÓA NỔI BẬT</h2>
+    <div class="activity-grid">
+        <div class="act-card" onclick="openActivity('camtrai')">
+            <img src="trai1.jpg" alt="">
+            <h3>🎪 Hội Trại 26/03</h3>
+        </div>
+        <div class="act-card" onclick="openActivity('vannghe')">
+            <img src="van1.jpg" alt="">
+            <h3>💃 Văn Nghệ 28/02</h3>
+        </div>
+        <div class="act-card" onclick="openActivity('thethao')">
+            <img src="thethao1.jpg" alt="">
+            <h3>⚽ Thể Thao</h3>
+        </div>
+        <div class="act-card" onclick="openActivity('hoctap')">
+            <img src="hoc1.jpg" alt="">
+            <h3>📚 Góc Học Tập</h3>
+        </div>
+    </div>
+
+    <footer>© 2026 Tổ 3 - Lớp 12A1 | Sát cánh bên nhau</footer>
+</div>
+
+<script>
+    const members = [
+        { name: 'Hồ Thị Mai', role: 'Tổ trưởng', hobby: 'Bơi lội', bio: 'Thủ lĩnh năng nổ của Tổ 3.',  img: 'mai.jpg' },
+        { name: 'Bạch Nguyễn Anh Thy', role: 'Tổ phó', hobby: 'Ăn', bio: 'Hài hước nhất tổ.', img: 'thy.jpg' },
+        { name: 'Bùi Thị Phương Thảo', role: 'Thành viên', hobby: 'Ăn', bio: 'Vui vẻ hòa đồng nhất tổ', img: 'thảo.jpg' },
+        { name: 'Phan Thị Thùy Sen', role: 'Thành viên', hobby: 'Xem phim', bio: '.', img: 'sen.jpg' },
+        { name: 'Nguyễn Thị Thảo My', role: 'Thành viên', hobby: 'Ăn mì cay', bio: 'Hướng nội nhất tổ.', img: 'my.jpg' },
+        { name: 'Trần Thanh Trúc', role: 'Thành viên', hobby: 'Nghe nhạc, chơi đàn', bio: 'Tiền đạo chủ lực.', img: 'trúc.jpg' },
+        { name: 'Lê Như Huyền', role: 'Thành viên', hobby: 'Nghe nhạc, xem phim', bio: 'Hiền lành nhất tổ.', img: 'huyền.jpg' },
+        { name: 'Trần Ngọc Tú', role: 'Thành viên', hobby: 'Game', bio: 'Cô nàng trầm tính.', img: 'tú.jpg' },
+        { name: 'Phan La Kỳ Dũng', role: 'Thành viên', hobby: 'Chụp ảnh, nghe nhạc', bio: 'Vũ công chuyên nghiệp.', img: 'dũng.jpg' },
+        { name: 'Hồ Quang Trung', role: 'Thành viên', hobby: 'Du lịch', bio: 'Năng động mỗi ngày.', img: 'trung.jpg' },
+        { name: 'Võ Tấn Huy', role: 'Thành viên', hobby: 'Đá bóng', bio: 'Ồn nhất tổ 3.', img: 'huy.jpg' }
+    ];
+
+    const actDetails = {
+        'camtrai': {
+            title: 'Hội Trại 26/03 - Đêm Rực Rỡ',
+            images: ['trai1.jpg', 'trai2.jpg', 'trai3.jpg'],
+            desc: `Hội trại là sự kiện đáng nhớ nhất năm học. Tổ 3 đã cùng nhau dựng trại suốt 24 giờ. <br><br><b>Thành tích:</b> Giải Nhì trang trí cổng trại.`
+        },
+        'vannghe': {
+            title: 'Văn Nghệ 20/11 - Tri Ân Thầy Cô',
+            images: ['van1.jpg', 'van2.jpg', 'van3.jpg'],
+            desc: `Tiết mục múa hiện đại của Tổ 3 đã làm bùng nổ sân khấu trường.<br><br><b>Cảm xúc:</b> Những buổi tập sau giờ học mệt nhưng vui vô cùng.`
+        },
+        'thethao': {
+            title: 'Hội Thao Sôi Động',
+            images: ['thethao1.jpg','thethao2.jpg','thethao3.jpg',],
+            desc: `Những vận động viên thực thụ trên sân đấu.<br><br><b>Kỷ niệm:</b> Những trận bóng chuyền đầy căng thẳng và cảm xúc.`
+        },
+        'hoctap': {
+            title: 'Góc Học Tập - Vượt Vũ Môn',
+            images: ['hoc1.jpg', 'hoc2.jpg','hoc3.jpg',],
+            desc: `Cắm đầu học để ngẩng cao đầu sau này.<br><br><b>Mục tiêu:</b> 100% thành viên Tổ 3 đỗ đại học nguyện vọng 1.`
+        }
+    };
+
+    function renderMembers() {
+        const rows = [document.getElementById('row-1'), document.getElementById('row-2'), document.getElementById('row-3')];
+        const layout = [2, 4, 5];
+        let idx = 0;
+        layout.forEach((count, rowIdx) => {
+            for(let i=0; i<count; i++) {
+                const m = members[idx++];
+                const card = document.createElement('div');
+                card.className = 'mem-card';
+                card.onclick = () => openMember(m);
+                card.innerHTML = `<img src="${m.img}"><h4>${m.name}</h4><p>${m.role}</p>`;
+                rows[rowIdx].appendChild(card);
+            }
+        });
+    }
+
+    function openActivity(id) {
+        const data = actDetails[id];
+        const html = `
+            <div class="image-gallery">
+                <img src="${data.images[0]}" class="large">
+                <img src="${data.images[1]}">
+                <img src="${data.images[2]}">
+            </div>
+            <h2>${data.title}</h2>
+            <p style="line-height:1.7; margin-top:15px; color:#555">${data.desc}</p>
+        `;
+        showModal(html);
+    }
+
+    function openMember(m) {
+        const html = `
+            <div style="text-align:center; margin-bottom:20px;">
+                <img src="${m.img}" style="width:150px; height:150px; border-radius:50%; border:5px solid var(--soft-blue);">
+            </div>
+            <h2 style="text-align:center; color:var(--soft-blue)">${m.name}</h2>
+            <p style="text-align:center; color:#888; font-weight:bold; margin-bottom:20px">${m.role}</p>
+            <p><strong>🌟 Sở thích:</strong> ${m.hobby}</p>
+            <p style="margin-top:10px"><strong>✍️ Giới thiệu:</strong> ${m.bio}</p>
+        `;
+        showModal(html);
+    }
+
+    function showModal(html) {
+        document.getElementById('modal-content').innerHTML = html;
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('modal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('modal').style.display = 'none';
+    }
+
+    renderMembers();
+</script>
+
+</body>
+</html>
